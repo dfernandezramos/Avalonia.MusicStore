@@ -34,4 +34,10 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Views\MusicStoreWindow.axaml.cs">
+        <DependentUpon>MusicStoreWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>
