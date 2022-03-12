@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using ReactiveUI;
 
 namespace Avalonia.MusicStore.ViewModels
@@ -14,6 +15,8 @@ namespace Avalonia.MusicStore.ViewModels
             SearchResults.Add(new AlbumViewModel());
             SearchResults.Add(new AlbumViewModel());
             SearchResults.Add(new AlbumViewModel());
+
+            BuyMusicCommand = ReactiveCommand.Create(() => SelectedAlbum);
         }
 
         public string? SearchText
@@ -35,5 +38,7 @@ namespace Avalonia.MusicStore.ViewModels
         }
 
         public ObservableCollection<AlbumViewModel> SearchResults { get; } = new ObservableCollection<AlbumViewModel>();
+
+        public ReactiveCommand<Unit, AlbumViewModel?> BuyMusicCommand { get; }
     }
 }
