@@ -1,7 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using Avalonia.MusicStore.Models;
 using ReactiveUI;
 
@@ -12,6 +14,7 @@ namespace Avalonia.MusicStore.ViewModels
         string? _searchText;
         bool _isBusy;
         AlbumViewModel? _selectedAlbum;
+        CancellationTokenSource _cancellationTokenSource;
 
         public MusicStoreViewModel()
         {
@@ -50,6 +53,10 @@ namespace Avalonia.MusicStore.ViewModels
             IsBusy = true;
             SearchResults.Clear();
 
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
+
             if (!string.IsNullOrWhiteSpace(s))
             {
                 var albums = await Album.SearchAsync(s);
@@ -60,9 +67,27 @@ namespace Avalonia.MusicStore.ViewModels
 
                     SearchResults.Add(vm);
                 }
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    LoadCovers(cancellationToken);
+                }
             }
 
             IsBusy = false;
+        }
+
+        async void LoadCovers(CancellationToken cancellationToken)
+        {
+            foreach (var album in SearchResults.ToList())
+            {
+                await album.LoadCover();
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+            }
         }
     }
 }
